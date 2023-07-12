@@ -6,3 +6,9 @@ VideoTimeline.newProject("Untitled");
 ```
 
 ![screenshot](readme_assets/screenshot.png)
+
+## Key commands
+
+| Key | Effect |
+| ----|--------|
+|space|play/pause|
