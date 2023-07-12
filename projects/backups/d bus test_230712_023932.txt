@@ -1,0 +1,13 @@
+VTProject("d bus test", 668.09338378906, [ VTBus('a', [  ]), VTBus('b', [  ]), VTBus('c', [  ]), VTBus('d', [ VTFuncClip(575.48638132293, 58.893428689057, { |playhead, clip, startPos| var timeIn = (startPos * (60 / clip.bus.project.tempo)).postln;
+
+fork {
+var stream = Pbind(\degree, Pseries()).asStream;
+stream.fastForward(timeIn).wait;
+~pat = EventStreamPlayer(stream, Event.default).play 
+}  }, { |playhead, clip| ~pat.stop   }) ]) ], [  ], 210.0, 586.36553955078, NetAddr.new("127.0.0.1", 12345), [ "[ [  ], [  ], [  ] ]", "[ [  ], [  ], [  ] ]", "[ [  ], [  ], [  ] ]", "[ [  ], [  ], [  ] ]", "[ [  ], [  ], [  ] ]", "[ [  ], [  ], [  ] ]", "[ [  ], [  ], [  ] ]", "[ [  ], [  ], [  ] ]", "[ [  ], [  ], [  ] ]", "[ [  ], [  ], [  ] ]", "[ [  ], [  ], [  ] ]", "[ [  ], [  ], [  ] ]", "[ [  ], [  ], [  ] ]", "[ [  ], [  ], [  ] ]", "[ [  ], [  ], [  ] ]", "[ [  ], [  ], [  ] ]", "[ [  ], [  ], [  ] ]", "[ [  ], [  ], [  ] ]", "[ [  ], [  ], [  ] ]", "[ [  ], [  ], [  ] ]", "[ [  ], [  ], [  ] ]", "[ [  ], [  ], [  ] ]", "[ [  ], [  ], [  ] ]", "[ [  ], [  ], [  ], [ VTFuncClip(575.48638132293, 58.893428689057, { |playhead, clip, startPos| var timeIn = (startPos * (60 / clip.bus.project.tempo)).postln;
+
+fork {
+var stream = Pbind(\\degree, Pseries()).asStream;
+stream.fastForward(timeIn).wait;
+~pat = EventStreamPlayer(stream, Event.default).play 
+}  }, { |playhead, clip| ~pat.stop   }) ] ]" ], [  ], VTMediaList([ VTMediaInfo(), VTMediaInfo(1, "A title", 45.6), VTMediaInfo(2, "Another title", 73.2), VTMediaInfo(3, "Short clip", 15.34), VTMediaInfo(4, "Accident tape", 24.3), VTMediaInfo(5, "Ferris B's Day", 20.3), VTMediaInfo(6, "Gregory falls", 25.3), VTMediaInfo(7, "Billiard balls", 24.3), VTMediaInfo(8, "Shopping malls", 23.3), VTMediaInfo(9, "HALLS cough drops advert", 15.3), VTMediaInfo(10, "Titanic", 24.3) ]))
