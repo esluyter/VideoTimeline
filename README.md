@@ -4,3 +4,5 @@ Timeline for video clips and SC code that runs in sync with Ableton Live timelin
 ```supercollider
 VideoTimeline.newProject("Untitled");
 ```
+
+![screenshot](readme_assets/screenshot.png)
