@@ -8,7 +8,7 @@ Timeline for video clips and SC code that runs in sync with Ableton Live timelin
 VideoTimeline.newProject("Untitled");
 ```
 
-![screenshot](readme_assets/screenshot.png)
+![screenshot](readme_assets/screenshot2.png)
 
 You have to click the "Markers" button to make the markers sync with Ableton's.
 
