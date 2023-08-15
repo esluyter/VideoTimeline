@@ -37,7 +37,7 @@ VTClip {
 
   startPos { |playhead|
     var beatsIn = (playhead - start); // how far in to clip ar we in beats?
-    var timeIn = (beatsIn * (1 / bus.project.tempo));
+    var timeIn = (beatsIn * (60 / bus.project.tempo));
     var adjustIn = timeIn * speed;
     ^this.timePos(this.time + adjustIn);
   }
@@ -45,14 +45,17 @@ VTClip {
   play { |playhead|
     var startPos = this.startPos(playhead);
     [bus.id, media, startPos, speed].postln;
+    VideoTimeline.play(bus.id, media, startPos, speed);
   }
 
   pause { |playhead|
     [bus.id, "pause"].postln;
+    VideoTimeline.pause(bus.id);
   }
 
   stop { |playhead|
     [bus.id, "blank"].postln;
+    VideoTimeline.stop(bus.id);
   }
 
 }

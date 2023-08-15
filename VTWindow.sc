@@ -22,6 +22,12 @@ VTWindow {
     t.refresh;
   }
 
+  refreshMediaList {
+    var value = mediaMenu.value;
+    mediaMenu.items_(project.mediaList.collect({ |media| media.index.asString ++ ". " ++ media.name }));
+    mediaMenu.value_(value);
+  }
+
   save { if (project.name == "Untitled") { this.saveAs } { project.write }; }
 
   saveAs { this.textPrompt("Save Project As", "Please type a name to save the project as:", { |name| project.name_(name); project.write }) }
@@ -248,7 +254,7 @@ VTWindow {
     .align_(\left);
 
     mediaMenu = PopUpMenu(inspector, Rect(5, 50, 170, 25))
-    .items_(project.mediaList.collect({ |media| media.index.asString ++ ". " ++ media.name })/*["blank", "1 - Whatever", "2 - Something else"]*/)
+    //.items_(project.mediaList.collect({ |media| media.index.asString ++ ". " ++ media.name })
     .value_(0)
     .font_(Font("Helvetica", 13, true))
     .stringColor_(Color.gray(0.4))
@@ -258,6 +264,8 @@ VTWindow {
       this.mediaValue_(mediaMenu.value);
       project.addUndoStep;
     });
+
+    this.refreshMediaList;
 
     timeText = StaticText(inspector, Rect(10, 80, 100, 25))
     .string_((0 * 60).asTimeString)

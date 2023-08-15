@@ -39,6 +39,7 @@ VTProject {
     d = d ?? VTBus(\d);
     this.buses.do(_.project_(this));
     this.buses.do(_.addDependant(this));
+    mediaList.addDependant(this);
     this.addUndoStep;
   }
 
