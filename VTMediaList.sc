@@ -10,7 +10,7 @@ VTMediaList {
   }
 
   *new { |list|
-    list = list ?? [VTMediaInfo()]
+    list = list ?? [VTMediaInfo(), VTMediaInfo(1, "dummy", 60 * 5)];
     ^super.newCopyArgs(list);
   }
 

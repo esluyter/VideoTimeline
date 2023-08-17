@@ -207,9 +207,14 @@ VTBusView {
       } {
         // adjust live playhead
         bus.project.playhead = clickPlayhead;
-        if (modifiers.isShift.not) {
+        //if (modifiers.isShift.not) {
           bus.project.liveNetAddr.sendMsg("/start_time", clickPlayhead);
           if (bus.project.is_playing) { bus.project.buses.do(_.updateClipForPlayhead) };
+        //};
+
+        // shift to scrub
+        if (modifiers.isShift) {
+          bus.project.buses.do(_.scrub);
         };
       };
     };
@@ -244,18 +249,29 @@ VTBusView {
             var clipEnd = clip.originStart + clip.originSustain;
             var proposedStart = (clip.originStart + delta).clip(0, clipEnd);
             if (bus.clipIndicesInRange(proposedStart, clipEnd) == [hoverClip[0]]) {
+              // adjust clip video pos
+              clip.pos = clip.startPos(proposedStart);
               clip.start = proposedStart;
               clip.sustain = clipEnd - clip.start;
             };
           };
           if (hoverClip[1] == \right) {
             var proposedSustain = max(0, clip.originSustain + delta);
-            if (bus.clipIndicesInRange(clip.start, clip.start + proposedSustain) == [hoverClip[0]]) {
+            var clipIndices = bus.clipIndicesInRange(clip.start, clip.start + proposedSustain);
+            if (clipIndices == [hoverClip[0]]) { // no conflicts
               clip.sustain = proposedSustain;
-              // adjust project time if we're past end
-              if ((clip.start + clip.sustain) > bus.project.projectTime) {
-                bus.project.projectTime = clip.start + clip.sustain;
+            } {
+              clipIndices.reject({ |item| item == hoverClip[0] }).do { |clipIndex|
+                var iClip = bus.clips[clipIndex];
+                if (iClip.start <= (clip.start + proposedSustain)) {
+                  proposedSustain = iClip.start - clip.start;
+                };
               };
+              clip.sustain = proposedSustain;
+            };
+            // adjust project time if we're past end
+            if ((clip.start + clip.sustain) > bus.project.projectTime) {
+              bus.project.projectTime = clip.start + clip.sustain;
             };
           };
         } {
@@ -279,8 +295,12 @@ VTBusView {
             };
           } {
             bus.project.playhead = this.winXTime(x);
-            if (modifiers.isShift.not) {
+            //if (modifiers.isShift.not) {
               bus.project.liveNetAddr.sendMsg("/start_time", this.winXTime(x));
+            //};
+            // shift to scrub
+            if (modifiers.isShift) {
+              bus.project.buses.do(_.scrub);
             };
           };
         };

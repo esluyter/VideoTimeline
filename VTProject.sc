@@ -22,7 +22,7 @@ VTProject {
 
   *projectNames { ^PathName("projects".resolveRelative).files.collect(_.fileNameWithoutExtension) }
 
-  *new { |name, projectTime, buses, markers, tempo = 60, playhead = 0, liveNetAddr, undoSteps, redoSteps, mediaList|
+  *new { |name, projectTime, buses, markers, tempo = 120, playhead = 0, liveNetAddr, undoSteps, redoSteps, mediaList|
     undoSteps = undoSteps ?? [];
     redoSteps = redoSteps ?? [];
     markers = markers ?? [];

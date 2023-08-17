@@ -8,9 +8,9 @@ VideoTimeline {
     };
   }
 
-  *pause { |bus_id|
+  *pause { |bus_id, media, position|
     if (videoControl.notNil) {
-      videoControl.perform(bus_id).pause;
+      videoControl.perform(bus_id).pause(*if(media.notNil, { [\media, media, \position, position] }, { [] }));
     };
   }
 
@@ -29,9 +29,7 @@ VideoTimeline {
     var project = VTProject(name, 5000,
       markers: [],
       liveNetAddr: NetAddr("127.0.0.1", 12345),
-      mediaList: VTMediaList.fromArray([
-        [0, "blank", 5.0]
-      ])
+      mediaList: VTMediaList()
     );
     this.openProject(project);
   }
@@ -55,6 +53,7 @@ VideoTimeline {
     w = VTWindow(project, { |name| this.readProject(name) }, {|name| this.newProject(name) });
 
     project.addDependant({ |what, field ...etc|
+      //[what, field, etc].debug("Project changed: ");
       defer {
         if (doRefresh) { w.refresh; };
         if (field == \name) {
@@ -94,6 +93,13 @@ VideoTimeline {
             w.inspectorBgColor.background_(Color.gray(0.8, 0.5));
             w.makeInspectorInvisibleButton.background_(Color.gray(0.8, 0.5));
             w.makeInspectorVisibleButton.background_(Color.gray(0.7, 0.5));
+          };
+        };
+        if (field == \clip) {
+          var index = etc[1];
+          var what = etc[2];
+          if (what == \pos) {
+            w.posValue_(project.selectedClipsPos);
           };
         };
       };
@@ -144,4 +150,6 @@ VideoTimeline {
       defer { project.tempo = msg[1]; w.tempoText.string_(project.tempo.round(0.001).asString.padRight(7, "0")); }
     }, "/tempo");
   }
+
+  *clips { ^project.buses.collect(_.clips) }
 }

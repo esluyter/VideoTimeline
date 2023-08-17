@@ -215,4 +215,17 @@ VTBus {
       pausedClip = nil;
     };
   }
+
+  scrub {
+    if (project.isPlaying.not and: [\a, \b, \c].indexOf(id).notNil) {
+      var nowPlayingIndex = this.clipIndexAtPoint(project.playhead);
+      if (nowPlayingIndex.notNil) {
+        var clip = clips[nowPlayingIndex];
+        var startPos = clip.startPos(project.playhead);
+        VideoTimeline.pause(id, clip.media, startPos);
+      } {
+        VideoTimeline.stop(id);
+      }
+    };
+  }
 }

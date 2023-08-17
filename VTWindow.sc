@@ -3,7 +3,7 @@ VTWindow {
   var <bounds, tBounds; // timeline overview bounds
   var <t; // timeline overview
   var <v, <w, <x, <y; // clip view
-  var <tempoText, playheadResetButton, playheadToSelectionStartButton, playheadToSelectionEndButton, markerButton, newClipButtons, splitButton, moveClipsButton, moveTimeButton, undoButton, redoButton, saveButton, saveAsButton, newButton, openButton, <projectNameText, trimPlayheadButton, trimClipsButton;
+  var <tempoText, playheadResetButton, playheadToSelectionStartButton, playheadToSelectionEndButton, markerButton, newClipButtons, splitButton, moveClipsButton, moveTimeButton, undoButton, redoButton, saveButton, saveAsButton, newButton, openButton, <projectNameText, getMediaButton, editMediaButton, editMediaWindow, trimPlayheadButton, trimClipsButton;
   var <>displayedTime = 300;
   var <>startTime = -20;
   var dragFrom;
@@ -153,43 +153,68 @@ VTWindow {
     .background_(Color.gray(0.7))
     .align_(\center);
 
-    playheadResetButton = this.newTopButton("| Live", 100, 40, { project.resetPlayhead; });
-    playheadToSelectionStartButton = this.newTopButton("| ←", 145, 30, { project.playheadToSelectionStart });
-    playheadToSelectionEndButton = this.newTopButton("→ |", 180, 30, { project.playheadToSelectionEnd });
-    markerButton = this.newTopButton("Markers", 220, 70, { project.liveNetAddr.sendMsg("/markers", 1) });
+    //playheadResetButton = this.newTopButton("| Live", 100, 40, { project.resetPlayhead; });
+    playheadToSelectionStartButton = this.newTopButton("| ←", 120, 30, { project.playheadToSelectionStart });
+    playheadToSelectionEndButton = this.newTopButton("→ |", 155, 30, { project.playheadToSelectionEnd });
+    //markerButton = this.newTopButton("Markers", 220, 70, { project.liveNetAddr.sendMsg("/markers", 1) });
 
-    View(win, Rect(370, 0, 270, 30)).background_(Color.hsv(0.65, 0.1, 0.65));
-    StaticText(win, Rect(385, 6, 100, 21)).string_("New Clip In").font_(Font("Helvetica", 13, true)).stringColor_(Color.gray(0.4));
-    newClipButtons = [
-      this.newTopButton("A", 465, 30, { project.a.addClip(project.playhead); }),
-      this.newTopButton("B", 500, 30, { project.b.addClip(project.playhead); }),
-      this.newTopButton("C", 535, 30, { project.c.addClip(project.playhead); }),
-      this.newTopButton("D", 570, 30, { project.d.addClip(project.playhead); })
-    ];
+    {
+      var offset = -150;
 
-    splitButton = this.newTopButton("Split", 655, 50, { project.splitSelectedClips(project.playhead) });
-    moveClipsButton = this.newTopButton("Move Clips", 715, 90, {
-      project.moveSelectedClipsTo(project.playhead);
-    });
-    moveTimeButton = this.newTopButton("Move Time", 810, 90, {
-      var selectionStart = project.selectedClipRange()[0];
-      if (project.playhead > selectionStart) {
-        project.addTime(selectionStart, project.playhead);
-      } {
-        project.cutTime(project.playhead, selectionStart);
-      };
-    });
+      View(win, Rect(370 + offset, 0, 270, 30)).background_(Color.hsv(0.65, 0.1, 0.65));
+      StaticText(win, Rect(390 + offset, 6, 100, 21)).string_("New Clip In").font_(Font("Helvetica", 13, true)).stringColor_(Color.gray(0.4));
+      newClipButtons = [
+        this.newTopButton("A", 480 + offset, 30, { project.a.addClip(project.playhead); }),
+        this.newTopButton("B", 515 + offset, 30, { project.b.addClip(project.playhead); }),
+        this.newTopButton("C", 550 + offset, 30, { project.c.addClip(project.playhead); }),
+        this.newTopButton("D", 585 + offset, 30, { project.d.addClip(project.playhead); })
+      ];
 
-    undoButton = this.newTopButton("Undo", 975, 60, { project.undo });
-    redoButton = this.newTopButton("Redo", 1040, 60, { project.redo });
-    projectNameText = StaticText(win, Rect(1110, 7, 250, 17)).font_(Font("Helvetica", 15)).string_(project.name).stringColor_(Color.gray(0.4)).background_(Color.gray(0.7)).align_(\center).mouseDownAction_({ |view, x, y, modifiers, buttonNumber, clickCount| if (clickCount == 2) { this.open } });
-    saveButton = this.newTopButton("Save", 1370, 60, { this.save });
-    saveAsButton = this.newTopButton("Save As", 1435, 80, { this.saveAs });
-    openButton = this.newTopButton("Open", 1525, 60, { this.open });
-    newButton = this.newTopButton("New", 1590, 50, { this.new });
+      splitButton = this.newTopButton("Split", 655 + offset, 50, { project.splitSelectedClips(project.playhead) });
+      moveClipsButton = this.newTopButton("Move Clips", 715 + offset, 90, {
+        project.moveSelectedClipsTo(project.playhead);
+      });
+      moveTimeButton = this.newTopButton("Move Time", 810 + offset, 90, {
+        var selectionStart = project.selectedClipRange()[0];
+        if (project.playhead > selectionStart) {
+          project.addTime(selectionStart, project.playhead);
+        } {
+          project.cutTime(project.playhead, selectionStart);
+        };
+      });
 
-    trimPlayheadButton = this.newTopButton("Trim to Playhead", bounds.width - 240, 120, { project.trimToPlayhead; });
-    trimClipsButton = this.newTopButton("Trim to Clips", bounds.width - 110, 100, { project.trimToClips; });
+      undoButton = this.newTopButton("Undo", 975 + offset, 60, { project.undo });
+      redoButton = this.newTopButton("Redo", 1040 + offset, 60, { project.redo });
+      projectNameText = StaticText(win, Rect(1110 + offset, 7, 250, 17)).font_(Font("Helvetica", 15)).string_(project.name).stringColor_(Color.gray(0.4)).background_(Color.gray(0.7)).align_(\center).mouseDownAction_({ |view, x, y, modifiers, buttonNumber, clickCount| if (clickCount == 2) { this.open } });
+      saveButton = this.newTopButton("Save", 1370 + offset, 60, { this.save });
+      saveAsButton = this.newTopButton("Save As", 1435 + offset, 80, { this.saveAs });
+      openButton = this.newTopButton("Open", 1525 + offset, 60, { this.open });
+      newButton = this.newTopButton("New", 1590 + offset, 50, { this.new });
+
+      getMediaButton = this.newTopButton("Get Media", 1715 + offset, 100, {
+        var addr = VideoTimeline.videoControl.client.serverAddress;
+        OSCFunc({ |msg| project.mediaList.fromArray(msg[1..].clump(3)) }, "/timeline_info", addr).oneShot;
+        addr.sendMsg("/timeline_query");
+      });
+      editMediaButton = this.newTopButton("Edit Media", 1820 + offset, 100, {
+        var mediaText, okButt, cancelButt;
+        if (editMediaWindow.notNil) { editMediaWindow.close };
+        editMediaWindow = Window("Media List").front;
+        mediaText = TextView(editMediaWindow, editMediaWindow.bounds.copy.origin_(0@0).height_(editMediaWindow.bounds.height - 30)).resize_(5).string_(project.mediaList.asString).font_(Font("Courier", 12));
+        okButt = this.newButton(editMediaWindow, Rect(20, editMediaWindow.bounds.height - 25, 100, 20), "Save", {
+          project.mediaList.parseString(mediaText.string);
+          editMediaWindow.close
+        }).resize_(7);
+        cancelButt = this.newButton(editMediaWindow, Rect(editMediaWindow.bounds.width - 120, editMediaWindow.bounds.height - 25, 100, 20), "Cancel", {
+          editMediaWindow.close
+        }).resize_(9);
+      });
+    }.();
+
+    View(win, Rect(bounds.width - 220, 0, 220, 30)).background_(Color.hsv(0.65, 0.1, 0.65));
+    StaticText(win, Rect(bounds.width - 200, 6, 100, 21)).string_("Trim to").font_(Font("Helvetica", 13, true)).stringColor_(Color.gray(0.4));
+    trimPlayheadButton = this.newTopButton("Playhead", bounds.width - 145, 70, { project.trimToPlayhead; });
+    trimClipsButton = this.newTopButton("Clips", bounds.width - 70, 50, { project.trimToClips; });
 
     // timeline overview
     View(win, Rect(0, 30, 10, 20)).background_(Color.hsv(0.6, 0.1, 0.68));
@@ -374,7 +399,7 @@ VTWindow {
     } {
       timeText.stringColor_(timeText.stringColor.copy.alpha_(1));
       if (mediaMenu.value.notNil) {
-        timeText.string_((project.mediaList[mediaMenu.value].posTime(value) * 60).asTimeString);
+        timeText.string_((project.mediaList[mediaMenu.value].posTime(value)).asTimeString);
       } {
         timeText.string_("");
       };
