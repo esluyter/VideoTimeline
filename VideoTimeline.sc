@@ -59,6 +59,13 @@ VideoTimeline {
         if (field == \name) {
           w.projectNameText.string_(project.name);
         };
+        if (field == \unsaved) {
+          if (project.unsaved) {
+            w.setUnsaved;
+          } {
+            w.setSaved;
+          };
+        };
         field = etc[0];
         if (field == \mediaList) {
           w.refreshMediaList;

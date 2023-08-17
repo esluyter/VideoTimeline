@@ -3,7 +3,7 @@ VTWindow {
   var <bounds, tBounds; // timeline overview bounds
   var <t; // timeline overview
   var <v, <w, <x, <y; // clip view
-  var <tempoText, playheadResetButton, playheadToSelectionStartButton, playheadToSelectionEndButton, markerButton, newClipButtons, splitButton, moveClipsButton, moveTimeButton, undoButton, redoButton, saveButton, saveAsButton, newButton, openButton, <projectNameText, getMediaButton, editMediaButton, editMediaWindow, trimPlayheadButton, trimClipsButton;
+  var <topBg, <topLightBg1, <topLightBg2, <tempoText, playheadResetButton, playheadToSelectionStartButton, playheadToSelectionEndButton, markerButton, newClipButtons, splitButton, moveClipsButton, moveTimeButton, undoButton, redoButton, <saveButton, saveAsButton, newButton, openButton, <projectNameText, getMediaButton, editMediaButton, editMediaWindow, trimPlayheadButton, trimClipsButton;
   var <>displayedTime = 300;
   var <>startTime = -20;
   var dragFrom;
@@ -144,7 +144,7 @@ VTWindow {
     newFunc = argnewFunc;
 
     // top panel
-    View(win, Rect(0, 0, bounds.width, 30)).background_(Color.hsv(0.65, 0.1, 0.58));
+    topBg = View(win, Rect(0, 0, bounds.width, 30)).background_(Color.hsv(0.65, 0.1, 0.58));
 
     tempoText = StaticText(win, Rect(10, 7, 80, 17))
     .font_(Font("Helvetica", 15))
@@ -161,7 +161,7 @@ VTWindow {
     {
       var offset = -150;
 
-      View(win, Rect(370 + offset, 0, 270, 30)).background_(Color.hsv(0.65, 0.1, 0.65));
+      topLightBg1 = View(win, Rect(370 + offset, 0, 270, 30)).background_(Color.hsv(0.65, 0.1, 0.65));
       StaticText(win, Rect(390 + offset, 6, 100, 21)).string_("New Clip In").font_(Font("Helvetica", 13, true)).stringColor_(Color.gray(0.4));
       newClipButtons = [
         this.newTopButton("A", 480 + offset, 30, { project.a.addClip(project.playhead); }),
@@ -193,7 +193,7 @@ VTWindow {
 
       getMediaButton = this.newTopButton("Get Media", 1715 + offset, 100, {
         var addr = VideoTimeline.videoControl.client.serverAddress;
-        OSCFunc({ |msg| project.mediaList.fromArray(msg[1..].clump(3)) }, "/timeline_info", addr).oneShot;
+        OSCFunc({ |msg| project.mediaList.fromArray(msg[1..].clump(3)); project.unsaved_(true); }, "/timeline_info", addr).oneShot;
         addr.sendMsg("/timeline_query");
       });
       editMediaButton = this.newTopButton("Edit Media", 1820 + offset, 100, {
@@ -203,6 +203,7 @@ VTWindow {
         mediaText = TextView(editMediaWindow, editMediaWindow.bounds.copy.origin_(0@0).height_(editMediaWindow.bounds.height - 30)).resize_(5).string_(project.mediaList.asString).font_(Font("Courier", 12));
         okButt = this.newButton(editMediaWindow, Rect(20, editMediaWindow.bounds.height - 25, 100, 20), "Save", {
           project.mediaList.parseString(mediaText.string);
+          project.unsaved_(true);
           editMediaWindow.close
         }).resize_(7);
         cancelButt = this.newButton(editMediaWindow, Rect(editMediaWindow.bounds.width - 120, editMediaWindow.bounds.height - 25, 100, 20), "Cancel", {
@@ -211,7 +212,7 @@ VTWindow {
       });
     }.();
 
-    View(win, Rect(bounds.width - 220, 0, 220, 30)).background_(Color.hsv(0.65, 0.1, 0.65));
+    topLightBg2 = View(win, Rect(bounds.width - 220, 0, 220, 30)).background_(Color.hsv(0.65, 0.1, 0.65));
     StaticText(win, Rect(bounds.width - 200, 6, 100, 21)).string_("Trim to").font_(Font("Helvetica", 13, true)).stringColor_(Color.gray(0.4));
     trimPlayheadButton = this.newTopButton("Playhead", bounds.width - 145, 70, { project.trimToPlayhead; });
     trimClipsButton = this.newTopButton("Clips", bounds.width - 70, 50, { project.trimToClips; });
@@ -414,5 +415,19 @@ VTWindow {
     } {
       speedBox.normalColor_(speedBox.normalColor.copy.alpha_(1));
     };
+  }
+
+  setUnsaved {
+    topBg.background = Color.hsv(0.0, 0.2, 0.58);
+    [topLightBg1, topLightBg2].do(_.background_(Color.hsv(0.0, 0.2, 0.65)));
+    saveButton.states = [saveButton.states.copy[0].put(1, Color.white).put(2, Color.hsv(0, 0.5, 0.85))];
+    saveAsButton.states = [saveAsButton.states.copy[0].put(1, Color.white).put(2, Color.hsv(0, 0.5, 0.85))];
+  }
+
+  setSaved {
+    topBg.background = Color.hsv(0.65, 0.1, 0.58);
+    [topLightBg1, topLightBg2].do(_.background_(Color.hsv(0.65, 0.1, 0.65)));
+    saveButton.states = [saveButton.states.copy[0].put(1, Color.gray(0.5)).put(2, Color.gray(0.85))];
+    saveAsButton.states = [saveAsButton.states.copy[0].put(1, Color.gray(0.5)).put(2, Color.gray(0.85))];
   }
 }

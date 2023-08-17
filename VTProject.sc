@@ -7,6 +7,7 @@ VTProject {
   var <is_playing = false;
   var <>maxUndo = 50;
   var <a, <b, <c, <d;
+  var <unsaved = false;
 
   storeArgs { ^[name, projectTime, this.buses, markers, tempo, playhead, liveNetAddr, undoSteps, redoSteps, mediaList]; }
 
@@ -15,6 +16,8 @@ VTProject {
       "Please save as a different name.".postln;
     } {
       this.asCompileString.write(("projects" +/+ name ++ ".txt").resolveRelative, true).write(("projects/backups" +/+ name ++ "_" ++ Date.getDate.stamp ++ ".txt").resolveRelative);
+      unsaved = false;
+      this.changed(\unsaved);
     };
   }
 
@@ -41,6 +44,7 @@ VTProject {
     this.buses.do(_.addDependant(this));
     mediaList.addDependant(this);
     this.addUndoStep;
+    unsaved = false;
   }
 
   update { |object ... args|
@@ -130,6 +134,8 @@ VTProject {
       undoSteps = undoSteps[undoSteps.size - maxUndo..];
     };
     redoSteps = [];
+    unsaved = true;
+    this.changed(\unsaved);
   }
 
   undo {
@@ -141,6 +147,8 @@ VTProject {
         bus.clips_(clips[i]);
       };
     };
+    unsaved = true;
+    this.changed(\unsaved);
   }
 
   redo {
@@ -151,7 +159,9 @@ VTProject {
       this.buses.do { |bus, i|
         bus.clips_(clips[i]);
       };
-    }
+    };
+    unsaved = true;
+    this.changed(\unsaved);
   }
 
   deselectAll {
@@ -281,4 +291,6 @@ VTProject {
   selectedClipsSpeed_ { |speed| this.selectedClips.select({ |clip| clip.class == VTClip }).do(_.speed_(speed)) }
   selectedClipsFunc_ { |func| this.selectedClips.select({ |clip| clip.class == VTFuncClip }).do(_.func_(func)) }
   selectedClipsStopFunc_ { |func| this.selectedClips.select({ |clip| clip.class == VTFuncClip }).do(_.stopFunc_(func)) }
+
+  unsaved_ { |val| unsaved = val; this.changed(\unsaved) }
 }

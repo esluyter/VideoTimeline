@@ -221,7 +221,7 @@ VTBusView {
     v.mouseUpAction = { |view, x, y, modifiers, buttonNumber|
       var undoable = false;
       bus.project.selectedClips.do { |clip|
-        if (clip.originStart != clip.start or: (clip.originSustain != clip.sustain)) { undoable = true };
+        if ((clip.originStart != clip.start and: clip.originStart.notNil) or: (clip.originSustain != clip.sustain and: clip.originSustain.notNil)) { undoable = true };
       };
       if (addingClip.notNil) { undoable = true };
       if (undoable) {
